@@ -1,0 +1,281 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}All Tasks - Task Manager{% endblock %}
+
+{% block content %}
+<div class="task-list-container">
+    {% if tasks %}
+        <div class="task-grid">
+            {% for task in tasks %}
+            <div class="task-card" data-delay="{{ forloop.counter0|add:"1" }}">
+                <div class="task-header">
+                    <h3 class="task-title">{{ task.title }}</h3>
+                    <span class="status-badge status-{{ task.status }}">
+                        {{ task.get_status_display }}
+                    </span>
+                </div>
+                {% if task.description %}
+                <p class="task-description">{{ task.description }}</p>
+                {% endif %}
+                <div class="task-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>Created: {{ task.created_date|date:"M d, Y" }}</span>
+                    </div>
+                    {% if task.due_date %}
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Due: {{ task.due_date|date:"M d, Y H:i" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if task.image or task.file %}
+                <div class="task-media">
+                    {% if task.image %}
+                    <img src="{{ task.image.url }}" alt="Task Image" class="task-image">
+                    {% endif %}
+                    {% if task.file %}
+                    <a href="{{ task.file.url }}" class="task-file">Download File</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% if task.status == 'completed' %}
+                <div class="task-actions">
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'task_delete' task.pk %}" class="btn btn-danger">Delete</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No tasks found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+<style>
+    .task-list-container {
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .task-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .task-card {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    animation: slideInUp 0.6s ease-out both;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .task-card[data-delay] {
+        animation-delay: attr(data-delay ms);
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .task-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        gap: 15px;
+    }
+
+    .task-title {
+        color: #2d3748;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .status-pending {
+        background: linear-gradient(45deg, #f6ad55, #ed8936);
+        color: white;
+    }
+
+    .status-in_progress {
+        background: linear-gradient(45deg, #4299e1, #3182ce);
+        color: white;
+    }
+
+    .status-completed {
+        background: linear-gradient(45deg, #48bb78, #38a169);
+        color: white;
+    }
+
+    .task-description {
+        color: #4a5568;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        font-size: 0.95rem;
+    }
+
+    .task-meta {
+        margin-bottom: 20px;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .meta-item i {
+        width: 16px;
+        color: #a0aec0;
+    }
+
+    .task-media {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .media-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 12px;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .media-item i {
+        color: #667eea;
+        font-size: 1.2rem;
+    }
+
+    .task-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .task-image:hover {
+        transform: scale(1.05);
+    }
+
+    .file-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .file-link:hover {
+        color: #5a67d8;
+        text-decoration: underline;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: bounceIn 1s ease-out;
+    }
+
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #a0aec0;
+        margin-bottom: 20px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+</style>

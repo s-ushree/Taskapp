@@ -1,0 +1,384 @@
+{% extends 'tasks/base.html' %}
+
+{% block title %}{{ title }} - Task Manager{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h2><i class="fas fa-edit"></i> {{ title }}</h2>
+        <p>Fill in the details below to {{ title|lower }}</p>
+    </div>
+    
+    <div class="form-card">
+        <form method="post" enctype="multipart/form-data" class="task-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">
+                    <i class="fas fa-heading"></i> Task Title
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <div class="error-message">
+                    {{ form.title.errors.0 }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">
+                    <i class="fas fa-align-left"></i> Description
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="error-message">
+                    {{ form.description.errors.0 }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.due_date.id_for_label }}">
+                        <i class="fas fa-calendar-alt"></i> Due Date
+                    </label>
+                    {{ form.due_date }}
+                    {% if form.due_date.errors %}
+                    <div class="error-message">
+                        {{ form.due_date.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}">
+                        <i class="fas fa-tasks"></i> Status
+                    </label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                    <div class="error-message">
+                        {{ form.status.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.image.id_for_label }}">
+                        <i class="fas fa-image"></i> Task Image
+                    </label>
+                    <div class="file-input-wrapper">
+                        {{ form.image }}
+                        <div class="file-input-label" onclick="document.getElementById('{{ form.image.id_for_label }}').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose an image file</span>
+                        </div>
+                    </div>
+                    {% if form.image.errors %}
+                    <div class="error-message">
+                        {{ form.image.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.file.id_for_label }}">
+                        <i class="fas fa-file"></i> Task File
+                    </label>
+                    <div class="file-input-wrapper">
+                        {{ form.file }}
+                        <div class="file-input-label" onclick="document.getElementById('{{ form.file.id_for_label }}').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose any file</span>
+                        </div>
+                    </div>
+                    {% if form.file.errors %}
+                    <div class="error-message">
+                        {{ form.file.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'task_list' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Tasks
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Save Task
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-container {
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-header h2 {
+        color: #2d3748;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .form-header p {
+        color: #718096;
+        font-size: 1.1rem;
+    }
+
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: fadeIn 1s ease-out 0.2s both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .task-form {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .form-group label {
+        color: #2d3748;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group label i {
+        color: #667eea;
+        width: 20px;
+    }
+
+    .form-control {
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .form-control:hover {
+        border-color: #cbd5e0;
+        transform: translateY(-1px);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    select.form-control {
+        cursor: pointer;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        opacity: 1;
+        cursor: pointer;
+        z-index: 1;
+        /* For debugging - make it visible */
+        /* left: -9999px;
+        opacity: 0;
+        z-index: -1; */
+    }
+
+    .file-input-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 15px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+    }
+
+    .file-input-label:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .file-input-label i {
+        font-size: 1.2rem;
+    }
+
+    .error-message {
+        color: #e53e3e;
+        font-size: 0.9rem;
+        margin-top: 5px;
+        padding: 8px 12px;
+        background: rgba(229, 62, 62, 0.1);
+        border-radius: 8px;
+        border-left: 3px solid #e53e3e;
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+        0%, 100% {
+            transform: translateX(0);
+        }
+        25% {
+            transform: translateX(-5px);
+        }
+        75% {
+            transform: translateX(5px);
+        }
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+        padding-top: 25px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .form-actions .btn {
+        min-width: 150px;
+        justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 25px;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+
+<script>
+    // File input preview functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, setting up file inputs');
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        console.log('Found file inputs:', fileInputs.length);
+        
+        fileInputs.forEach((input, index) => {
+            console.log(`Setting up file input ${index}:`, input);
+            input.addEventListener('change', function(e) {
+                console.log('File input changed:', e.target.files);
+                const label = this.nextElementSibling;
+                const file = e.target.files[0];
+                
+                if (file) {
+                    console.log('File selected:', file.name, file.size, file.type);
+                    label.innerHTML = `<i class="fas fa-check"></i> ${file.name}`;
+                    label.style.background = 'linear-gradient(45deg, #48bb78, #38a169)';
+                } else {
+                    console.log('No file selected');
+                    label.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> Choose a file`;
+                    label.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
